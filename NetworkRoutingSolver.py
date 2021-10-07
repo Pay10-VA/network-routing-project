@@ -5,6 +5,27 @@ from CS312Graph import *
 import time
 
 
+class ArrayQueue:
+    def __init__(self):
+        self.node_array = []
+
+    def insert(self, item):
+        self.node_array.append(item)
+
+    def make_queue(self, nodes):
+        for i in range(len(nodes)):
+            self.node_array.append(nodes[i])
+
+    def delete_min(self, node_id):
+        for i in range(len(self.node_array)):
+            if self.node_array[i].node_id == node_id:
+                self.node_array.pop(i)
+                break
+
+    def decrease_key(self):
+        pass
+
+
 class NetworkRoutingSolver:
     def __init__( self):
         pass
@@ -13,6 +34,7 @@ class NetworkRoutingSolver:
         assert( type(network) == CS312Graph )
         self.network = network
 
+    # Returns the path
     def getShortestPath( self, destIndex ):
         self.dest = destIndex
         # TODO: RETURN THE SHORTEST PATH FOR destIndex
@@ -33,6 +55,17 @@ class NetworkRoutingSolver:
 
     def computeShortestPaths( self, srcIndex, use_heap=False ):
         self.source = srcIndex
+
+        queue = None
+        if use_heap:
+            queue = ArrayQueue()
+        # Dijkstra's algorithm implementation here
+
+        my_array = self.network.nodes
+        for i in range(len(my_array)):
+            print(my_array[i].node_id)
+
+
         t1 = time.time()
         # TODO: RUN DIJKSTRA'S TO DETERMINE SHORTEST PATHS.
         #       ALSO, STORE THE RESULTS FOR THE SUBSEQUENT
