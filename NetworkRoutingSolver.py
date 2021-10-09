@@ -3,8 +3,14 @@
 
 from CS312Graph import *
 import time
+import math
+
+# Global variables
+global_distance_dictionary = {}
+global_previous_dictionary = {}
 
 
+# Class that implements a priority queue as an array
 class ArrayQueue:
     def __init__(self):
         self.node_array = []
@@ -19,10 +25,12 @@ class ArrayQueue:
     def delete_min(self, node_id):
         for i in range(len(self.node_array)):
             if self.node_array[i].node_id == node_id:
+                min_node = self.node_array[i]
                 self.node_array.pop(i)
+                return min_node
                 break
 
-    def decrease_key(self):
+    def decrease_key(self, node_id):
         pass
 
 
@@ -41,6 +49,11 @@ class NetworkRoutingSolver:
         #       INSTEAD OF THE DUMMY SET OF EDGES BELOW
         #       IT'S JUST AN EXAMPLE OF THE FORMAT YOU'LL 
         #       NEED TO USE
+        # Use a global variable to store and retrieve the previous and distance array (at the top of the file)
+
+        # Figure out the order of nodes to visit from the source to the destination node
+        # Use the previous array to do this
+
         path_edges = []
         total_length = 0
         node = self.network.nodes[self.source]
@@ -53,17 +66,53 @@ class NetworkRoutingSolver:
             edges_left -= 1
         return {'cost':total_length, 'path':path_edges}
 
+    # Finds the node with the highest priority
+    def find_lowest_key(self, nodes, distance_dictionary):
+        lowest_key = None
+        node_id_to_go = None
+        for i in range(len(nodes)):
+            if i == 0:
+                lowest_key = distance_dictionary[nodes[i].node_id]
+                node_id_to_go = nodes[i].node_id
+            else:
+                if distance_dictionary[nodes[i].node_id] < lowest_key:
+                    lowest_key = distance_dictionary[nodes[i].node_id]
+                    node_id_to_go = nodes[i].node_id
+        return node_id_to_go
+
     def computeShortestPaths( self, srcIndex, use_heap=False ):
         self.source = srcIndex
 
         queue = None
         if use_heap:
             queue = ArrayQueue()
-        # Dijkstra's algorithm implementation here
 
-        my_array = self.network.nodes
-        for i in range(len(my_array)):
-            print(my_array[i].node_id)
+        # Array holds all nodes in the graph
+        nodes = self.network.nodes
+
+        distance_dictionary = {}
+        previous_dictionary = {}
+
+        # Algorithm Setup
+        for i in range(len(nodes)):
+            distance_dictionary[nodes[i].node_id] = math.inf
+            previous_dictionary[nodes[i].node_id] = None
+        distance_dictionary[nodes[srcIndex].node_id] = 0
+
+        queue.make_queue(nodes)
+
+        while len(queue.node_array) != 0:
+            u = queue.delete_min(self.find_lowest_key(queue.node_array, distance_dictionary))
+            if u is None:
+                continue
+            for i in range(len(u.neighbors)):
+                neighbor_node_id = u.neighbors[i].dest.node_id
+                edge_weight_of_neighbor = u.neighbors[i].length
+                if distance_dictionary[neighbor_node_id] > distance_dictionary[u.node_id] + edge_weight_of_neighbor:
+                    distance_dictionary[neighbor_node_id] = distance_dictionary[u.node_id] + edge_weight_of_neighbor
+                    previous_dictionary[neighbor_node_id] = u.node_id
+                    queue.decrease_key(neighbor_node_id)
+
 
 
         t1 = time.time()
