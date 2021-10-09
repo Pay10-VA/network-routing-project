@@ -5,11 +5,6 @@ from CS312Graph import *
 import time
 import math
 
-# Global variables
-global_distance_dictionary = {}
-global_previous_dictionary = {}
-
-
 # Class that implements a priority queue as an array
 class ArrayQueue:
     def __init__(self):
@@ -36,6 +31,8 @@ class ArrayQueue:
 
 class NetworkRoutingSolver:
     def __init__( self):
+        global_distance_dictionary = {}
+        global_previous_dictionary = {}
         pass
 
     def initializeNetwork( self, network ):
@@ -51,20 +48,57 @@ class NetworkRoutingSolver:
         #       NEED TO USE
         # Use a global variable to store and retrieve the previous and distance array (at the top of the file)
 
-        # Figure out the order of nodes to visit from the source to the destination node
+        # Figure out the order in which we need to visit nodes from the source node to the destination node
         # Use the previous array to do this
+
+        node_id_in_order = []
+        print(self.network.nodes[destIndex].node_id)
+        print(self.global_previous_dictionary)
+        print(self.global_distance_dictionary)
+        current_node_id = self.global_previous_dictionary[self.network.nodes[destIndex].node_id]
+        node_id_in_order.append(current_node_id)
+        keep_going = True
+        while keep_going:
+            current_node_id = self.global_previous_dictionary[current_node_id]
+            if current_node_id is None:
+                keep_going = False
+            else:
+                keep_going = True
+                node_id_in_order.append(current_node_id)
+
+        node_id_in_order.reverse()
+
+        # PROBLEM: OUR GLOBAL VARIABLES ARE RESETTING EVERYTIME WE START THIS FUNCTION. GOES OUT OF SCOPE
+
+
+        # path_edges = []
+        # total_length = 0
+        # node = self.network.nodes[self.source]
+        # edges_left = 3
+        # while edges_left > 0:
+        #    edge = node.neighbors[2]
+        #    path_edges.append( (edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)) )
+        #    total_length += edge.length
+        #    node = edge.dest
+        #    edges_left -= 1
+        # return {'cost':total_length, 'path':path_edges}
 
         path_edges = []
         total_length = 0
         node = self.network.nodes[self.source]
-        edges_left = 3
+        edges_left = len(node_id_in_order)
+        counter = 0
         while edges_left > 0:
-            edge = node.neighbors[2]
-            path_edges.append( (edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)) )
+            edge = node.neighbors[node.neighbors.index(node_id_in_order[counter + 1])]
+            counter += 1
+            path_edges.append((edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)))
             total_length += edge.length
             node = edge.dest
             edges_left -= 1
-        return {'cost':total_length, 'path':path_edges}
+        return {'cost': total_length, 'path': path_edges}
+
+
+
 
     # Finds the node with the highest priority
     def find_lowest_key(self, nodes, distance_dictionary):
@@ -113,6 +147,12 @@ class NetworkRoutingSolver:
                     previous_dictionary[neighbor_node_id] = u.node_id
                     queue.decrease_key(neighbor_node_id)
 
+
+        print("here")
+        self.global_distance_dictionary = distance_dictionary
+        print(self.global_distance_dictionary)
+        self.global_previous_dictionary = previous_dictionary
+        print(self.global_previous_dictionary)
 
 
         t1 = time.time()
