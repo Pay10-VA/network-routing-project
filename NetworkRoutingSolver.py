@@ -29,6 +29,38 @@ class ArrayQueue:
         pass
 
 
+# Represents a node in the heap
+class HeapNode:
+    def __init__(self):
+        pass
+
+# Class that implements a priority queue as a heap
+# See slides starting from 95/99 for implementation details
+class HeapQueue:
+    def __init__(self):
+        pass
+
+    def bubble_up(self, item):
+        pass
+
+    def sift_down(self, item):
+        pass
+
+    def min_child(self, item):
+        pass
+
+    def insert(self, item):
+        pass
+
+    def make_queue(self, nodes):
+        pass
+
+    def delete_min(self, node_id):
+        pass
+
+    def decrease_key(self, node_id):
+        pass
+
 class NetworkRoutingSolver:
     def __init__( self):
         global_distance_dictionary = {}
@@ -106,6 +138,8 @@ class NetworkRoutingSolver:
         queue = None
         if use_heap:
             queue = ArrayQueue()
+        else:
+            queue = HeapQueue()
 
         # Array holds all nodes in the graph
         nodes = self.network.nodes
