@@ -52,10 +52,6 @@ class NetworkRoutingSolver:
         # Use the previous array to do this
 
         node_id_in_order = []
-        print(self.network.nodes[self.source].node_id)
-        print(self.network.nodes[destIndex].node_id)
-        print(self.global_previous_dictionary)
-        print(self.global_distance_dictionary)
         current_node_id = self.global_previous_dictionary[self.network.nodes[destIndex].node_id]
         node_id_in_order.append(current_node_id)
         keep_going = True
@@ -72,8 +68,6 @@ class NetworkRoutingSolver:
         # Add destination node to the array
         node_id_in_order.append(self.network.nodes[destIndex].node_id)
 
-        print(node_id_in_order)
-
         path_edges = []
         total_length = 0
         node = self.network.nodes[self.source]
@@ -83,7 +77,6 @@ class NetworkRoutingSolver:
             # Find index
             index_counter = 0
             for i in range(len(node.neighbors)):
-                print(node.neighbors[i].dest.node_id)
                 if node.neighbors[i].dest.node_id == node_id_in_order[counter + 1]: # Added + 1
                     index_counter = i
 
@@ -122,8 +115,6 @@ class NetworkRoutingSolver:
 
         # Array holds all nodes in the graph
         nodes = self.network.nodes
-        for i in range(len(nodes)):
-            print(nodes[i])
 
         distance_dictionary = {}
         previous_dictionary = {}
@@ -148,10 +139,8 @@ class NetworkRoutingSolver:
                     previous_dictionary[neighbor_node_id] = u.node_id
                     queue.decrease_key(neighbor_node_id)
 
-
         self.global_distance_dictionary = distance_dictionary
         self.global_previous_dictionary = previous_dictionary
-
 
         t1 = time.time()
         # TODO: RUN DIJKSTRA'S TO DETERMINE SHORTEST PATHS.
