@@ -46,11 +46,8 @@ class NetworkRoutingSolver:
         #       INSTEAD OF THE DUMMY SET OF EDGES BELOW
         #       IT'S JUST AN EXAMPLE OF THE FORMAT YOU'LL 
         #       NEED TO USE
-        # Use a global variable to store and retrieve the previous and distance array (at the top of the file)
 
-        # Figure out the order in which we need to visit nodes from the source node to the destination node
-        # Use the previous array to do this
-
+        # Use previous array to figure out path to destination node
         node_id_in_order = []
         current_node_id = self.global_previous_dictionary[self.network.nodes[destIndex].node_id]
         node_id_in_order.append(current_node_id)
@@ -88,9 +85,6 @@ class NetworkRoutingSolver:
             node = edge.dest
             edges_left -= 1
         return {'cost': total_length, 'path': path_edges}
-
-
-
 
     # Finds the node with the highest priority
     def find_lowest_key(self, nodes, distance_dictionary):
