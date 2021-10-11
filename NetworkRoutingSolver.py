@@ -52,6 +52,7 @@ class NetworkRoutingSolver:
         # Use the previous array to do this
 
         node_id_in_order = []
+        print(self.network.nodes[self.source].node_id)
         print(self.network.nodes[destIndex].node_id)
         print(self.global_previous_dictionary)
         print(self.global_distance_dictionary)
@@ -68,28 +69,26 @@ class NetworkRoutingSolver:
 
         node_id_in_order.reverse()
 
-        # PROBLEM: OUR GLOBAL VARIABLES ARE RESETTING EVERYTIME WE START THIS FUNCTION. GOES OUT OF SCOPE
+        # Add destination node to the array
+        node_id_in_order.append(self.network.nodes[destIndex].node_id)
 
-
-        # path_edges = []
-        # total_length = 0
-        # node = self.network.nodes[self.source]
-        # edges_left = 3
-        # while edges_left > 0:
-        #    edge = node.neighbors[2]
-        #    path_edges.append( (edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)) )
-        #    total_length += edge.length
-        #    node = edge.dest
-        #    edges_left -= 1
-        # return {'cost':total_length, 'path':path_edges}
+        print(node_id_in_order)
 
         path_edges = []
         total_length = 0
         node = self.network.nodes[self.source]
-        edges_left = len(node_id_in_order)
+        edges_left = len(node_id_in_order) - 1 # Added - 1
         counter = 0
         while edges_left > 0:
-            edge = node.neighbors[node.neighbors.index(node_id_in_order[counter + 1])]
+            # Find index
+            index_counter = 0
+            for i in range(len(node.neighbors)):
+                print(node.neighbors[i].dest.node_id)
+                if node.neighbors[i].dest.node_id == node_id_in_order[counter + 1]: # Added + 1
+                    index_counter = i
+
+            # edge = node.neighbors[node.neighbors.index(node_id_in_order[counter + 1])]
+            edge = node.neighbors[index_counter]
             counter += 1
             path_edges.append((edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)))
             total_length += edge.length
@@ -123,6 +122,8 @@ class NetworkRoutingSolver:
 
         # Array holds all nodes in the graph
         nodes = self.network.nodes
+        for i in range(len(nodes)):
+            print(nodes[i])
 
         distance_dictionary = {}
         previous_dictionary = {}
@@ -148,11 +149,8 @@ class NetworkRoutingSolver:
                     queue.decrease_key(neighbor_node_id)
 
 
-        print("here")
         self.global_distance_dictionary = distance_dictionary
-        print(self.global_distance_dictionary)
         self.global_previous_dictionary = previous_dictionary
-        print(self.global_previous_dictionary)
 
 
         t1 = time.time()
