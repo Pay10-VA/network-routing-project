@@ -29,16 +29,13 @@ class ArrayQueue:
         pass
 
 
-# Represents a node in the heap
-class HeapNode:
-    def __init__(self):
-        pass
-
 # Class that implements a priority queue as a heap
-# See slides starting from 95/99 for implementation details
+# See slides starting from 95/99 for implementation details and back of chapter 4 for pseudo code
+# We are implementing the binary heap as two arrays
 class HeapQueue:
     def __init__(self):
-        pass
+        self.pointer_dictionary = {}
+        self.binary_heap_array = []
 
     def bubble_up(self, item):
         pass
@@ -49,11 +46,24 @@ class HeapQueue:
     def min_child(self, item):
         pass
 
-    def insert(self, item):
+    def insert(self, node):
+        if len(self.binary_heap_array) == 0: # There's nothing in the tree yet
+            self.binary_heap_array.append(node)
+            self.pointer_dictionary[node.node_id] = self.binary_heap_array.index(node)
+        else: # Adding nodes to a tree with nodes already in it
+            # Add it to the back of the array, and then call bubble up
+            self.binary_heap_array.append(node)
+            self.pointer_dictionary[node.node_id] = self.binary_heap_array.index(node)
+            # Finish
+
+
+
+
         pass
 
     def make_queue(self, nodes):
-        pass
+        for i in range(len(nodes)):
+            self.insert(nodes[i])
 
     def delete_min(self, node_id):
         pass
@@ -149,7 +159,7 @@ class NetworkRoutingSolver:
 
         # Algorithm Setup
         for i in range(len(nodes)):
-            distance_dictionary[nodes[i].node_id] = math.inf
+            distance_dictionary[nodes[i].node_id] = float('inf') # math.inf
             previous_dictionary[nodes[i].node_id] = None
         distance_dictionary[nodes[srcIndex].node_id] = 0
 
