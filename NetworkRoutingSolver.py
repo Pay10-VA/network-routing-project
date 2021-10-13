@@ -5,6 +5,9 @@ from CS312Graph import *
 import time
 import math
 
+distance_dictionary = {}
+previous_dictionary = {}
+
 # Class that implements a priority queue as an array
 class ArrayQueue:
     def __init__(self):
@@ -35,10 +38,19 @@ class ArrayQueue:
 class HeapQueue:
     def __init__(self):
         self.pointer_dictionary = {}
-        self.binary_heap_array = []
+        self.node_array = []
 
-    def bubble_up(self, item):
-        pass
+    def bubble_up(self, node):
+        self.node_array.append(node)
+        index = self.node_array.index(node)
+        p = (index // 2)
+        while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
+            self.node_array[index] = self.node_array[p] # Put parent node where child was
+            self.pointer_dictionary[self.node_array[p].node_id] = index # Update pointer dictionary here, too
+            index = p
+            p = (index // 2)
+        self.node_array[index] = node # Put child node where parent was
+        self.pointer_dictionary[node.node_id] = index
 
     def sift_down(self, item):
         pass
@@ -47,23 +59,13 @@ class HeapQueue:
         pass
 
     def insert(self, node):
-        if len(self.binary_heap_array) == 0: # There's nothing in the tree yet
-            self.binary_heap_array.append(node)
-            self.pointer_dictionary[node.node_id] = self.binary_heap_array.index(node)
-        else: # Adding nodes to a tree with nodes already in it
-            # Add it to the back of the array, and then call bubble up
-            self.binary_heap_array.append(node)
-            self.pointer_dictionary[node.node_id] = self.binary_heap_array.index(node)
-            # Finish
-
-
-
-
-        pass
+        self.bubble_up(node)
 
     def make_queue(self, nodes):
+        # Initialize the pointer_dictionary, and insert to binary_heap_array
         for i in range(len(nodes)):
             self.insert(nodes[i])
+            self.pointer_dictionary[nodes[i].node_id] = self.node_array.index(nodes[i])
 
     def delete_min(self, node_id):
         pass
@@ -154,8 +156,8 @@ class NetworkRoutingSolver:
         # Array holds all nodes in the graph
         nodes = self.network.nodes
 
-        distance_dictionary = {}
-        previous_dictionary = {}
+        # distance_dictionary = {} Made this a global variable
+        # previous_dictionary = {} Made this a global variable
 
         # Algorithm Setup
         for i in range(len(nodes)):
