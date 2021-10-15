@@ -70,14 +70,11 @@ class HeapQueue:
         if (2 * i) >= len(self.node_array) - 1:
             return -1 # No children
         else:
-            # What does the pseudocode mean here?
-            # return (2*i)+1
-            # Return the index of the child node with the lowest key?
             # If node has one child
             if (2 * i) + 2 >= len(self.node_array):
                 return (2 * i) + 1
 
-            # If node has two children
+            # If node has two children, return the index of the child node that has the smallest distance/key
             else:
                 if distance_dictionary[self.node_array[(2*i)+1].node_id] < distance_dictionary[self.node_array[(2*i)+2].node_id]:
                     return (2 * i) + 1
@@ -192,9 +189,9 @@ class NetworkRoutingSolver:
 
         queue = None
         if use_heap:
-            queue = ArrayQueue()
-        else:
             queue = HeapQueue()
+        else:
+            queue = ArrayQueue()
 
         # Array holds all nodes in the graph
         nodes = self.network.nodes
