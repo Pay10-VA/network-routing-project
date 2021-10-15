@@ -28,7 +28,7 @@ class ArrayQueue:
                 return min_node
                 break
 
-    def decrease_key(self, node_id):
+    def decrease_key(self, node):
         pass
 
 
@@ -52,11 +52,37 @@ class HeapQueue:
         self.node_array[index] = node # Put child node where parent was
         self.pointer_dictionary[node.node_id] = index
 
-    def sift_down(self, item):
-        pass
+    def sift_down(self, item, i):
+        # add last element to root position
+        self.node_array[i] = item
 
-    def min_child(self, item):
-        pass
+        # delete the last element
+        self.node_array.pop()
+
+        c = self.min_child(i)
+        while c != -1 and distance_dictionary[self.node_array[c].node_id] < distance_dictionary[item.node_id]:
+            self.node_array[i] = self.node_array[c]
+            self.node_array[c] = item
+            i = c
+            c = self.min_child(i)
+
+    def min_child(self, i):
+        if (2 * i) >= len(self.node_array) - 1:
+            return -1 # No children
+        else:
+            # What does the pseudocode mean here?
+            # return (2*i)+1
+            # Return the index of the child node with the lowest key?
+            # If node has one child
+            if (2 * i) + 2 >= len(self.node_array):
+                return (2 * i) + 1
+
+            # If node has two children
+            else:
+                if distance_dictionary[self.node_array[(2*i)+1].node_id] < distance_dictionary[self.node_array[(2*i)+2].node_id]:
+                    return (2 * i) + 1
+                else:
+                    return (2 * i) + 2
 
     def insert(self, node):
         self.bubble_up(node)
@@ -68,10 +94,26 @@ class HeapQueue:
             self.pointer_dictionary[nodes[i].node_id] = self.node_array.index(nodes[i])
 
     def delete_min(self, node_id):
-        pass
+        if len(self.node_array) == 0:
+            return None
+        else:
+            x = self.node_array[0]
+            self.sift_down(self.node_array[len(self.node_array) - 1], 0)
+            return x
 
-    def decrease_key(self, node_id):
-        pass
+    def another_bubble_up(self, node, index):
+        p = -(-index // 2) - 1
+        while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
+            self.node_array[index] = self.node_array[p] # Put parent node where child was
+            self.pointer_dictionary[self.node_array[p].node_id] = index # Update pointer dictionary here, too
+            index = p
+            p =  (index // 2)# -(-index // 2) - 1 # (index // 2)
+        self.node_array[index] = node # Put child node where parent was
+        self.pointer_dictionary[node.node_id] = index
+
+    def decrease_key(self, node):
+        if node in self.node_array:
+            self.another_bubble_up(node, self.node_array.index(node))
 
 class NetworkRoutingSolver:
     def __init__( self):
@@ -86,6 +128,7 @@ class NetworkRoutingSolver:
     # Returns the path
     def getShortestPath( self, destIndex ):
         self.dest = destIndex
+        print(self.global_previous_dictionary)
         # TODO: RETURN THE SHORTEST PATH FOR destIndex
         #       INSTEAD OF THE DUMMY SET OF EDGES BELOW
         #       IT'S JUST AN EXAMPLE OF THE FORMAT YOU'LL 
@@ -97,7 +140,7 @@ class NetworkRoutingSolver:
         node_id_in_order.append(current_node_id)
         keep_going = True
         while keep_going:
-            current_node_id = self.global_previous_dictionary[current_node_id]
+            current_node_id = self.global_previous_dictionary[current_node_id] # Passing in "None" as key to dictionary
             if current_node_id is None:
                 keep_going = False
             else:
@@ -177,7 +220,8 @@ class NetworkRoutingSolver:
                 if distance_dictionary[neighbor_node_id] > distance_dictionary[u.node_id] + edge_weight_of_neighbor:
                     distance_dictionary[neighbor_node_id] = distance_dictionary[u.node_id] + edge_weight_of_neighbor
                     previous_dictionary[neighbor_node_id] = u.node_id
-                    queue.decrease_key(neighbor_node_id)
+                    # queue.decrease_key(neighbor_node_id)
+                    queue.decrease_key(u.neighbors[i].dest)
 
         self.global_distance_dictionary = distance_dictionary
         self.global_previous_dictionary = previous_dictionary
