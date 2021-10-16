@@ -3,7 +3,6 @@
 
 from CS312Graph import *
 import time
-import math
 
 distance_dictionary = {}
 previous_dictionary = {}
@@ -33,8 +32,6 @@ class ArrayQueue:
 
 
 # Class that implements a priority queue as a heap
-# See slides starting from 95/99 for implementation details and back of chapter 4 for pseudo code
-# We are implementing the binary heap as two arrays
 class HeapQueue:
     def __init__(self):
         self.pointer_dictionary = {}
@@ -45,18 +42,22 @@ class HeapQueue:
         index = self.node_array.index(node)
         p = (index // 2)
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
-            self.node_array[index] = self.node_array[p] # Put parent node where child was
-            self.pointer_dictionary[self.node_array[p].node_id] = index # Update pointer dictionary here, too
+            # Put parent node where child was
+            self.node_array[index] = self.node_array[p]
+            # Update pointer dictionary here, too
+            self.pointer_dictionary[self.node_array[p].node_id] = index
             index = p
             p = (index // 2)
-        self.node_array[index] = node # Put child node where parent was
+
+        # Put child node where parent was
+        self.node_array[index] = node
         self.pointer_dictionary[node.node_id] = index
 
     def sift_down(self, item, i):
-        # add last element to root position
+        # Add last element to root position
         self.node_array[i] = item
 
-        # delete the last element
+        # Delete the last element
         self.node_array.pop()
 
         c = self.min_child(i)
@@ -67,8 +68,9 @@ class HeapQueue:
             c = self.min_child(i)
 
     def min_child(self, i):
+        # Node has no children
         if (2 * i) >= len(self.node_array) - 1:
-            return -1 # No children
+            return -1
         else:
             # If node has one child
             if (2 * i) + 2 >= len(self.node_array):
@@ -101,11 +103,15 @@ class HeapQueue:
     def another_bubble_up(self, node, index):
         p = -(-index // 2) - 1
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
-            self.node_array[index] = self.node_array[p] # Put parent node where child was
-            self.pointer_dictionary[self.node_array[p].node_id] = index # Update pointer dictionary here, too
+            # Put parent node where child was
+            self.node_array[index] = self.node_array[p]
+            # Update pointer dictionary here, too
+            self.pointer_dictionary[self.node_array[p].node_id] = index
             index = p
-            p =  (index // 2)# -(-index // 2) - 1 # (index // 2)
-        self.node_array[index] = node # Put child node where parent was
+            p = (index // 2)
+
+        # Put child node where parent was
+        self.node_array[index] = node
         self.pointer_dictionary[node.node_id] = index
 
     def decrease_key(self, node):
@@ -137,7 +143,7 @@ class NetworkRoutingSolver:
         node_id_in_order.append(current_node_id)
         keep_going = True
         while keep_going:
-            current_node_id = self.global_previous_dictionary[current_node_id] # Passing in "None" as key to dictionary
+            current_node_id = self.global_previous_dictionary[current_node_id]
             if current_node_id is None:
                 keep_going = False
             else:
@@ -152,16 +158,15 @@ class NetworkRoutingSolver:
         path_edges = []
         total_length = 0
         node = self.network.nodes[self.source]
-        edges_left = len(node_id_in_order) - 1 # Added - 1
+        edges_left = len(node_id_in_order) - 1
         counter = 0
         while edges_left > 0:
             # Find index
             index_counter = 0
             for i in range(len(node.neighbors)):
-                if node.neighbors[i].dest.node_id == node_id_in_order[counter + 1]: # Added + 1
+                if node.neighbors[i].dest.node_id == node_id_in_order[counter + 1]:
                     index_counter = i
 
-            # edge = node.neighbors[node.neighbors.index(node_id_in_order[counter + 1])]
             edge = node.neighbors[index_counter]
             counter += 1
             path_edges.append((edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)))
@@ -196,12 +201,9 @@ class NetworkRoutingSolver:
         # Array holds all nodes in the graph
         nodes = self.network.nodes
 
-        # distance_dictionary = {} Made this a global variable
-        # previous_dictionary = {} Made this a global variable
-
         # Algorithm Setup
         for i in range(len(nodes)):
-            distance_dictionary[nodes[i].node_id] = float('inf') # math.inf
+            distance_dictionary[nodes[i].node_id] = float('inf')
             previous_dictionary[nodes[i].node_id] = None
         distance_dictionary[nodes[srcIndex].node_id] = 0
 
@@ -217,7 +219,6 @@ class NetworkRoutingSolver:
                 if distance_dictionary[neighbor_node_id] > distance_dictionary[u.node_id] + edge_weight_of_neighbor:
                     distance_dictionary[neighbor_node_id] = distance_dictionary[u.node_id] + edge_weight_of_neighbor
                     previous_dictionary[neighbor_node_id] = u.node_id
-                    # queue.decrease_key(neighbor_node_id)
                     queue.decrease_key(u.neighbors[i].dest)
 
         self.global_distance_dictionary = distance_dictionary
