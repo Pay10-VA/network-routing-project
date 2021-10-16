@@ -4,6 +4,7 @@
 from CS312Graph import *
 import time
 
+# Global distance and previous dictionaries
 distance_dictionary = {}
 previous_dictionary = {}
 
@@ -12,13 +13,16 @@ class ArrayQueue:
     def __init__(self):
         self.node_array = []
 
+    # Appends nodes to the back of the array - O(1) time
     def insert(self, item):
         self.node_array.append(item)
 
+    # Iterates through a set, and appends each element to the back of the node_array - O(n) time, size of set
     def make_queue(self, nodes):
         for i in range(len(nodes)):
             self.node_array.append(nodes[i])
 
+    # Deletes the element in the array with the lowest key(distance) - O(n) time
     def delete_min(self, node_id):
         for i in range(len(self.node_array)):
             if self.node_array[i].node_id == node_id:
@@ -27,6 +31,7 @@ class ArrayQueue:
                 return min_node
                 break
 
+    # Does nothing. Not needed for array implementation of priority queue - O(1) time
     def decrease_key(self, node):
         pass
 
@@ -37,6 +42,7 @@ class HeapQueue:
         self.pointer_dictionary = {}
         self.node_array = []
 
+    # Bubbles node up until it is no longer less than its parent - O(log n) time
     def bubble_up(self, node):
         self.node_array.append(node)
         index = self.node_array.index(node)
@@ -53,6 +59,7 @@ class HeapQueue:
         self.node_array[index] = node
         self.pointer_dictionary[node.node_id] = index
 
+    # Sifts down a node until it is no longer greater than it's child node - O(log n) time
     def sift_down(self, item, i):
         # Add last element to root position
         self.node_array[i] = item
@@ -67,8 +74,9 @@ class HeapQueue:
             i = c
             c = self.min_child(i)
 
+    # Returns the index of a given nodes' child node that has the lowest key - O(1) time
     def min_child(self, i):
-        # Node has no children
+        # Node has no children - O(1) time
         if (2 * i) >= len(self.node_array) - 1:
             return -1
         else:
@@ -83,15 +91,19 @@ class HeapQueue:
                 else:
                     return (2 * i) + 2
 
+    # Inserts an element to the last element of the binary heap - O(log n) time
     def insert(self, node):
         self.bubble_up(node)
 
+    # Given a set of nodes, add each node to the binary heap - O(n log n) time
     def make_queue(self, nodes):
         # Initialize the pointer_dictionary, and insert to binary_heap_array
         for i in range(len(nodes)):
             self.insert(nodes[i])
             self.pointer_dictionary[nodes[i].node_id] = self.node_array.index(nodes[i])
 
+    # Deletes and returns the root node. Places the last node in the root, sifts down as needed - O(log n) time
+    # Everything is in constant time, except the call to self.sift_down method (O(log n))
     def delete_min(self, node_id):
         if len(self.node_array) == 0:
             return None
@@ -100,6 +112,7 @@ class HeapQueue:
             self.sift_down(self.node_array[len(self.node_array) - 1], 0)
             return x
 
+    # Same bubble up from before, except with added parameter and small changes - O(log n) time
     def another_bubble_up(self, node, index):
         p = -(-index // 2) - 1
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
@@ -114,6 +127,7 @@ class HeapQueue:
         self.node_array[index] = node
         self.pointer_dictionary[node.node_id] = index
 
+    # Switches a nodes position in the tree if their key changes, to keep the ordering of the heap - O(log n) time
     def decrease_key(self, node):
         if node in self.node_array:
             self.another_bubble_up(node, self.node_array.index(node))
@@ -131,7 +145,6 @@ class NetworkRoutingSolver:
     # Returns the path
     def getShortestPath( self, destIndex ):
         self.dest = destIndex
-        print(self.global_previous_dictionary)
         # TODO: RETURN THE SHORTEST PATH FOR destIndex
         #       INSTEAD OF THE DUMMY SET OF EDGES BELOW
         #       IT'S JUST AN EXAMPLE OF THE FORMAT YOU'LL 
@@ -175,10 +188,12 @@ class NetworkRoutingSolver:
             edges_left -= 1
         return {'cost': total_length, 'path': path_edges}
 
-    # Finds the node with the highest priority
+    # Finds the node with the highest priority - O(n) time
     def find_lowest_key(self, nodes, distance_dictionary):
         lowest_key = None
         node_id_to_go = None
+
+        # Iterates n times. n = number of nodes
         for i in range(len(nodes)):
             if i == 0:
                 lowest_key = distance_dictionary[nodes[i].node_id]
@@ -192,6 +207,7 @@ class NetworkRoutingSolver:
     def computeShortestPaths( self, srcIndex, use_heap=False ):
         self.source = srcIndex
 
+        # Figure out which queue implementation to use
         queue = None
         if use_heap:
             queue = HeapQueue()
@@ -201,7 +217,7 @@ class NetworkRoutingSolver:
         # Array holds all nodes in the graph
         nodes = self.network.nodes
 
-        # Algorithm Setup
+        # Algorithm Setup - O(n) time
         for i in range(len(nodes)):
             distance_dictionary[nodes[i].node_id] = float('inf')
             previous_dictionary[nodes[i].node_id] = None
@@ -209,10 +225,13 @@ class NetworkRoutingSolver:
 
         queue.make_queue(nodes)
 
+        # Iterates n times
         while len(queue.node_array) != 0:
             u = queue.delete_min(self.find_lowest_key(queue.node_array, distance_dictionary))
             if u is None:
                 continue
+            # Iterates 3 times - each node has 3 neighbors
+            # Everything is in constant time. Call to decrease key varies depending on implementation
             for i in range(len(u.neighbors)):
                 neighbor_node_id = u.neighbors[i].dest.node_id
                 edge_weight_of_neighbor = u.neighbors[i].length
@@ -221,6 +240,7 @@ class NetworkRoutingSolver:
                     previous_dictionary[neighbor_node_id] = u.node_id
                     queue.decrease_key(u.neighbors[i].dest)
 
+        # Saves the distance and previous dictionaries to the global variables
         self.global_distance_dictionary = distance_dictionary
         self.global_previous_dictionary = previous_dictionary
 
