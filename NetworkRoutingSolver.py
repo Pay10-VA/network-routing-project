@@ -152,10 +152,17 @@ class NetworkRoutingSolver:
 
         # Use previous array to figure out path to destination node
         node_id_in_order = []
+        path_edges = []
+        total_length = 0
         current_node_id = self.global_previous_dictionary[self.network.nodes[destIndex].node_id]
         node_id_in_order.append(current_node_id)
         keep_going = True
         while keep_going:
+            if current_node_id is None:
+                keep_going = False
+                total_length = float('inf')
+                return {'cost': total_length, 'path': path_edges}
+
             current_node_id = self.global_previous_dictionary[current_node_id]
             if current_node_id is None:
                 keep_going = False
@@ -168,8 +175,6 @@ class NetworkRoutingSolver:
         # Add destination node to the array
         node_id_in_order.append(self.network.nodes[destIndex].node_id)
 
-        path_edges = []
-        total_length = 0
         node = self.network.nodes[self.source]
         edges_left = len(node_id_in_order) - 1
         counter = 0
