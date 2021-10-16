@@ -158,6 +158,8 @@ class NetworkRoutingSolver:
         node_id_in_order.append(current_node_id)
         keep_going = True
         while keep_going:
+
+            # When node is unreachable
             if current_node_id is None:
                 keep_going = False
                 total_length = float('inf')
