@@ -48,8 +48,10 @@ class HeapQueue:
         index = self.node_array.index(node)
         p = (index // 2)
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
+
             # Put parent node where child was
             self.node_array[index] = self.node_array[p]
+
             # Update pointer dictionary here, too
             self.pointer_dictionary[self.node_array[p].node_id] = index
             index = p
@@ -116,8 +118,10 @@ class HeapQueue:
     def another_bubble_up(self, node, index):
         p = -(-index // 2) - 1
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
+
             # Put parent node where child was
             self.node_array[index] = self.node_array[p]
+
             # Update pointer dictionary here, too
             self.pointer_dictionary[self.node_array[p].node_id] = index
             index = p
