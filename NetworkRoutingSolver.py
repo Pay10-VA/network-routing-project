@@ -216,6 +216,7 @@ class NetworkRoutingSolver:
         return node_id_to_go
 
     def computeShortestPaths( self, srcIndex, use_heap=False ):
+        t1 = time.time()
         self.source = srcIndex
 
         # Figure out which queue implementation to use
@@ -255,10 +256,7 @@ class NetworkRoutingSolver:
         self.global_distance_dictionary = distance_dictionary
         self.global_previous_dictionary = previous_dictionary
 
-        t1 = time.time()
-        # TODO: RUN DIJKSTRA'S TO DETERMINE SHORTEST PATHS.
-        #       ALSO, STORE THE RESULTS FOR THE SUBSEQUENT
-        #       CALL TO getShortestPath(dest_index)
         t2 = time.time()
+
         return (t2-t1)
 
