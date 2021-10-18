@@ -45,7 +45,8 @@ class HeapQueue:
     # Bubbles node up until it is no longer less than its parent - O(log n) time
     def bubble_up(self, node):
         self.node_array.append(node)
-        index = self.node_array.index(node)
+        self.pointer_dictionary[node.node_id] = len(self.node_array) - 1
+        index = self.pointer_dictionary[node.node_id] # self.node_array.index(node)
         p = (index // 2)
         while index != 0 and distance_dictionary[self.node_array[p].node_id] > distance_dictionary[node.node_id]:
 
@@ -65,6 +66,7 @@ class HeapQueue:
     def sift_down(self, item, i):
         # Add last element to root position
         self.node_array[i] = item
+        self.pointer_dictionary[item.node_id] = 0
 
         # Delete the last element
         self.node_array.pop()
@@ -73,6 +75,9 @@ class HeapQueue:
         while c != -1 and distance_dictionary[self.node_array[c].node_id] < distance_dictionary[item.node_id]:
             self.node_array[i] = self.node_array[c]
             self.node_array[c] = item
+            # Update pointer dictionary
+            self.pointer_dictionary[self.node_array[c].node_id] = i
+            self.pointer_dictionary[item.node_id] = c
             i = c
             c = self.min_child(i)
 
@@ -102,7 +107,7 @@ class HeapQueue:
         # Initialize the pointer_dictionary, and insert to binary_heap_array
         for i in range(len(nodes)):
             self.insert(nodes[i])
-            self.pointer_dictionary[nodes[i].node_id] = self.node_array.index(nodes[i])
+            # self.pointer_dictionary[nodes[i].node_id] = self.node_array.index(nodes[i])
 
     # Deletes and returns the root node. Places the last node in the root, sifts down as needed - O(log n) time
     # Everything is in constant time, except the call to self.sift_down method (O(log n))
@@ -111,6 +116,7 @@ class HeapQueue:
             return None
         else:
             x = self.node_array[0]
+            self.pointer_dictionary[self.node_array[0].node_id] = None
             self.sift_down(self.node_array[len(self.node_array) - 1], 0)
             return x
 
